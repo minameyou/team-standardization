@@ -44,43 +44,26 @@
         }
 
         .file-upload-section {
-            background: #fafafa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px dashed #d0d0d0;
+            padding: 15px 0;
+            margin-bottom: 15px;
         }
 
         .upload-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
             margin-top: 0;
         }
 
         .upload-box {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
+            background: transparent;
+            padding: 8px;
             text-align: center;
-            border: 2px solid #e0e0e0;
             transition: all 0.3s;
         }
 
         .upload-box:hover {
-            border-color: #999;
-            transform: translateY(-2px);
-        }
-
-        .upload-box.loaded {
-            border-color: #28a745;
-            background: #f0fff4;
-        }
-
-        .upload-box h3 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1em;
+            transform: translateY(-1px);
         }
 
         .file-input-wrapper {
@@ -131,10 +114,10 @@
         }
 
         .file-status {
-            margin-top: 8px;
-            color: #666;
-            font-size: 0.85em;
-            min-height: 18px;
+            margin-top: 5px;
+            color: #999;
+            font-size: 0.75em;
+            min-height: 15px;
         }
 
         .file-status.success {
@@ -248,11 +231,11 @@
         }
 
         .team-a {
-            color: #5a5a5a;
+            color: #4682b4;
         }
 
         .team-b {
-            color: #3a3a3a;
+            color: #daa520;
         }
 
         .diff-cell {
@@ -260,11 +243,11 @@
         }
 
         .diff-positive {
-            color: #4a4a4a;
+            color: #27ae60;
         }
 
         .diff-negative {
-            color: #6b6b6b;
+            color: #e74c3c;
         }
 
         .diff-neutral {
@@ -343,19 +326,17 @@
         <div class="file-upload-section">
             <div class="upload-grid">
                 <div class="upload-box" id="uploadBox1">
-                    <h3>A팀 데이터</h3>
                     <div class="file-input-wrapper">
                         <input type="file" id="fileInput1" accept=".xlsx,.xls" onchange="handleFileUpload(1, this)">
-                        <label for="fileInput1" class="file-input-label team-a-btn">파일 선택</label>
+                        <label for="fileInput1" class="file-input-label team-a-btn">A팀 파일 선택</label>
                     </div>
                     <div class="file-status" id="fileStatus1">-</div>
                 </div>
 
                 <div class="upload-box" id="uploadBox2">
-                    <h3>B팀 데이터</h3>
                     <div class="file-input-wrapper">
                         <input type="file" id="fileInput2" accept=".xlsx,.xls" onchange="handleFileUpload(2, this)">
-                        <label for="fileInput2" class="file-input-label team-b-btn">파일 선택</label>
+                        <label for="fileInput2" class="file-input-label team-b-btn">B팀 파일 선택</label>
                     </div>
                     <div class="file-status" id="fileStatus2">-</div>
                 </div>
@@ -425,9 +406,9 @@
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
                         pointHoverBorderColor: 'rgb(70, 130, 180)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
                     },
                     {
                         label: 'B팀',
@@ -439,9 +420,9 @@
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
                         pointHoverBorderColor: 'rgb(218, 165, 32)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
                     }
                 ]
             },
@@ -451,16 +432,16 @@
                 scales: {
                     r: {
                         beginAtZero: true,
-                        max: 3,
+                        max: 4,
                         min: 0,
                         ticks: {
-                            stepSize: 0.5,
+                            stepSize: 1,
                             font: {
                                 size: 12
                             },
                             color: '#000000',
                             callback: function(value) {
-                                return value.toFixed(1);
+                                return value;
                             }
                         },
                         pointLabels: {
@@ -581,7 +562,6 @@
 
                     statusEl.textContent = `✓ ${file.name}`;
                     statusEl.className = 'file-status success';
-                    boxEl.classList.add('loaded');
 
                     updateChart();
                 } catch (error) {

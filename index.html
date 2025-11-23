@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>팀별 프로세스 레벨 비교 차트</title>
+    <title>팀별 프로세스 레벨 비교 - 멀티 세트</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -29,18 +29,71 @@
             margin: 0 auto;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2em;
+        .set-tabs-container {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
         }
 
-        .subtitle {
-            text-align: center;
+        .set-tabs {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .set-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
             color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .set-tab:hover {
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .set-tab.active {
+            color: #333;
+            border-bottom-color: #6b6b6b;
+        }
+
+        .set-tab-close {
+            margin-left: 8px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .set-tab-close:hover {
+            color: #e74c3c;
+        }
+
+        .add-set-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #6b6b6b;
+            transition: all 0.3s;
+        }
+
+        .add-set-btn:hover {
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .set-content {
+            display: none;
+        }
+
+        .set-content.active {
+            display: block;
         }
 
         .file-upload-section {
@@ -117,7 +170,10 @@
             margin-top: 5px;
             color: #999;
             font-size: 0.75em;
-            min-height: 15px;
+            height: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .file-status.success {
@@ -157,6 +213,128 @@
 
         .chart-download-btn:active {
             transform: translateY(0);
+        }
+
+        .snapshot-gallery {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .snapshot-gallery h3 {
+            color: #333;
+            font-size: 1em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .snapshot-item {
+            position: relative;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .snapshot-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .snapshot-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .snapshot-info {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #666;
+            background: white;
+        }
+
+        .snapshot-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .snapshot-delete:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .snapshot-empty {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 0.9em;
+        }
+
+        .snapshot-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .snapshot-modal.active {
+            display: flex;
+        }
+
+        .snapshot-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .snapshot-modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 10px;
+        }
+
+        .snapshot-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #333;
         }
 
         .legend {
@@ -289,23 +467,6 @@
             font-size: 0.85em;
         }
 
-        .download-template {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: #6b6b6b;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        .download-template:hover {
-            transform: translateY(-2px);
-            background: #555;
-        }
-
         @media (max-width: 768px) {
             .chart-wrapper {
                 height: 400px;
@@ -323,173 +484,325 @@
 </head>
 <body>
     <div class="container">
-        <div class="file-upload-section">
-            <div class="upload-grid">
-                <div class="upload-box" id="uploadBox1">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="fileInput1" accept=".xlsx,.xls" onchange="handleFileUpload(1, this)">
-                        <label for="fileInput1" class="file-input-label team-a-btn">A팀 파일 선택</label>
-                    </div>
-                    <div class="file-status" id="fileStatus1">-</div>
-                </div>
-
-                <div class="upload-box" id="uploadBox2">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="fileInput2" accept=".xlsx,.xls" onchange="handleFileUpload(2, this)">
-                        <label for="fileInput2" class="file-input-label team-b-btn">B팀 파일 선택</label>
-                    </div>
-                    <div class="file-status" id="fileStatus2">-</div>
-                </div>
+        <!-- 세트 탭 -->
+        <div class="set-tabs-container">
+            <div class="set-tabs" id="setTabs">
+                <!-- 탭들이 동적으로 추가됨 -->
             </div>
         </div>
 
-        <div class="chart-wrapper">
-            <button class="chart-download-btn" onclick="downloadChartImage()">
-                <span>저장</span>
-            </button>
-            <canvas id="radarChart"></canvas>
+        <!-- 세트별 컨텐츠 -->
+        <div id="setContents">
+            <!-- 컨텐츠가 동적으로 추가됨 -->
         </div>
-
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color" style="background: rgba(70, 130, 180, 0.7);"></div>
-                <span>A팀</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: rgba(218, 165, 32, 0.7);"></div>
-                <span>B팀</span>
-            </div>
-        </div>
-
-        <div class="summary-cards" id="summaryCards"></div>
-
-        <div class="comparison-table">
-            <h2>프로세스별 상세 비교</h2>
-            <table id="comparisonTable">
-                <thead>
-                    <tr>
-                        <th>프로세스</th>
-                        <th>태스크 수</th>
-                        <th>A팀 평균</th>
-                        <th>B팀 평균</th>
-                        <th>차이 (B-A)</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="5" style="color: #999;">데이터를 업로드하면 여기에 표시됩니다</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
     </div>
 
     <script>
-        const ctx = document.getElementById('radarChart').getContext('2d');
-        
-        let teamAData = null;
-        let teamBData = null;
+        // 전역 변수
+        let sets = {};
+        let currentSetId = 1;
+        let nextSetId = 2;
+        let charts = {};
 
-        const config = {
-            type: 'radar',
-            data: {
-                labels: ['프로세스 1', '프로세스 2', '프로세스 3', '프로세스 4', '프로세스 5', '프로세스 6', '프로세스 7', '프로세스 8'],
-                datasets: [
-                    {
-                        label: 'A팀',
-                        data: [0, 0, 0, 0, 0, 0, 0, 0],
-                        fill: true,
-                        backgroundColor: 'rgba(70, 130, 180, 0.2)',
-                        borderColor: 'rgb(70, 130, 180)',
-                        pointBackgroundColor: 'rgb(70, 130, 180)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(70, 130, 180)',
-                        borderWidth: 2,
-                        pointRadius: 3,
-                        pointHoverRadius: 5
-                    },
-                    {
-                        label: 'B팀',
-                        data: [0, 0, 0, 0, 0, 0, 0, 0],
-                        fill: true,
-                        backgroundColor: 'rgba(218, 165, 32, 0.2)',
-                        borderColor: 'rgb(218, 165, 32)',
-                        pointBackgroundColor: 'rgb(218, 165, 32)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(218, 165, 32)',
-                        borderWidth: 2,
-                        pointRadius: 3,
-                        pointHoverRadius: 5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        beginAtZero: true,
-                        max: 4,
-                        min: 0,
-                        ticks: {
-                            stepSize: 1,
-                            font: {
-                                size: 12
-                            },
-                            color: '#000000',
-                            callback: function(value) {
-                                return value;
-                            }
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            addNewSet(true); // 첫 세트 추가
+        });
+
+        // 새 세트 추가
+        function addNewSet(isFirst = false) {
+            const setId = isFirst ? 1 : nextSetId++;
+            
+            sets[setId] = {
+                teamAData: null,
+                teamBData: null,
+                name: `${Object.keys(sets).length + 1}세트`
+            };
+
+            // 탭 추가
+            const tabsContainer = document.getElementById('setTabs');
+            const addBtn = tabsContainer.querySelector('.add-set-btn');
+            
+            const tabHtml = `
+                <button class="set-tab ${isFirst ? 'active' : ''}" data-set="${setId}" onclick="switchSet(${setId})">
+                    <span class="set-tab-name" ondblclick="editSetName(${setId}, event)">${sets[setId].name}</span>
+                    ${!isFirst ? `<span class="set-tab-close" onclick="deleteSet(${setId}, event)">✕</span>` : ''}
+                </button>
+            `;
+            
+            if (addBtn) {
+                addBtn.insertAdjacentHTML('beforebegin', tabHtml);
+            } else {
+                tabsContainer.innerHTML += tabHtml + '<button class="add-set-btn" onclick="addNewSet()">+ 세트 추가</button>';
+            }
+
+            // 컨텐츠 추가
+            const contentsContainer = document.getElementById('setContents');
+            const contentHtml = createSetContent(setId);
+            contentsContainer.insertAdjacentHTML('beforeend', contentHtml);
+
+            // 차트 초기화
+            initChart(setId);
+
+            if (!isFirst) {
+                switchSet(setId);
+            }
+        }
+
+        // 세트 컨텐츠 HTML 생성
+        function createSetContent(setId) {
+            return `
+                <div class="set-content ${setId === 1 ? 'active' : ''}" data-set="${setId}">
+                    <div class="file-upload-section">
+                        <div class="upload-grid">
+                            <div class="upload-box">
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="fileA-${setId}" accept=".xlsx,.xls" onchange="handleFileUpload(${setId}, 'A', this)">
+                                    <label for="fileA-${setId}" class="file-input-label team-a-btn">A팀 파일 선택</label>
+                                </div>
+                                <div class="file-status" data-team="A">-</div>
+                            </div>
+
+                            <div class="upload-box">
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="fileB-${setId}" accept=".xlsx,.xls" onchange="handleFileUpload(${setId}, 'B', this)">
+                                    <label for="fileB-${setId}" class="file-input-label team-b-btn">B팀 파일 선택</label>
+                                </div>
+                                <div class="file-status" data-team="B">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <button class="chart-download-btn" onclick="downloadChartImage(${setId})">
+                            <span>저장</span>
+                        </button>
+                        <canvas id="chart-${setId}"></canvas>
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(70, 130, 180, 0.7);"></div>
+                            <span>A팀</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: rgba(218, 165, 32, 0.7);"></div>
+                            <span>B팀</span>
+                        </div>
+                    </div>
+
+                    <div class="snapshot-gallery">
+                        <h3>📸 스냅샷 이력</h3>
+                        <div class="snapshot-grid" id="snapshot-grid-${setId}">
+                            <div class="snapshot-empty">저장 버튼을 눌러 스냅샷을 남겨보세요</div>
+                        </div>
+                    </div>
+
+                    <div class="snapshot-modal" id="modal-${setId}" onclick="closeModal(${setId})">
+                        <div class="snapshot-modal-content" onclick="event.stopPropagation()">
+                            <button class="snapshot-modal-close" onclick="closeModal(${setId})">✕</button>
+                            <img src="" alt="스냅샷">
+                        </div>
+                    </div>
+
+                    <div class="summary-cards" id="summary-${setId}"></div>
+
+                    <div class="comparison-table">
+                        <h2>프로세스별 상세 비교</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>프로세스</th>
+                                    <th>A팀 평균</th>
+                                    <th>B팀 평균</th>
+                                    <th>차이 (B-A)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-${setId}">
+                                <tr>
+                                    <td colspan="4" style="color: #999;">데이터를 업로드하면 여기에 표시됩니다</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 차트 초기화
+        function initChart(setId) {
+            const ctx = document.getElementById(`chart-${setId}`).getContext('2d');
+            
+            charts[setId] = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['프로세스 1', '프로세스 2', '프로세스 3', '프로세스 4', '프로세스 5', '프로세스 6', '프로세스 7', '프로세스 8'],
+                    datasets: [
+                        {
+                            label: 'A팀',
+                            data: [0, 0, 0, 0, 0, 0, 0, 0],
+                            fill: true,
+                            backgroundColor: 'rgba(70, 130, 180, 0.2)',
+                            borderColor: 'rgb(70, 130, 180)',
+                            pointBackgroundColor: 'rgb(70, 130, 180)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(70, 130, 180)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
                         },
-                        pointLabels: {
-                            font: {
-                                size: 16,
-                                weight: 'bold'
-                            },
-                            color: '#000000'
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.15)'
-                        },
-                        angleLines: {
-                            color: 'rgba(0, 0, 0, 0.15)'
+                        {
+                            label: 'B팀',
+                            data: [0, 0, 0, 0, 0, 0, 0, 0],
+                            fill: true,
+                            backgroundColor: 'rgba(218, 165, 32, 0.2)',
+                            borderColor: 'rgb(218, 165, 32)',
+                            pointBackgroundColor: 'rgb(218, 165, 32)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(218, 165, 32)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
                         }
-                    }
+                    ]
                 },
-                plugins: {
-                    legend: {
-                        display: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 4,
+                            min: 0,
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12 },
+                                color: '#000000',
+                                callback: function(value) { return value; }
+                            },
+                            pointLabels: {
+                                font: { size: 16, weight: 'bold' },
+                                color: '#000000'
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.15)' },
+                            angleLines: { color: 'rgba(0, 0, 0, 0.15)' }
+                        }
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 15,
-                        titleFont: {
-                            size: 16
-                        },
-                        bodyFont: {
-                            size: 14
-                        },
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': ' + context.parsed.r.toFixed(2);
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 15,
+                            titleFont: { size: 16 },
+                            bodyFont: { size: 14 },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.r.toFixed(2);
+                                }
                             }
                         }
                     }
                 }
+            });
+        }
+
+        // 세트 전환
+        function switchSet(setId) {
+            currentSetId = setId;
+
+            // 모든 탭 비활성화
+            document.querySelectorAll('.set-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택된 탭 활성화
+            document.querySelector(`.set-tab[data-set="${setId}"]`).classList.add('active');
+
+            // 모든 컨텐츠 숨기기
+            document.querySelectorAll('.set-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 선택된 컨텐츠 표시
+            document.querySelector(`.set-content[data-set="${setId}"]`).classList.add('active');
+        }
+
+        // 세트 삭제
+        function deleteSet(setId, event) {
+            event.stopPropagation();
+            
+            if (Object.keys(sets).length === 1) {
+                alert('최소 1개의 세트가 필요합니다.');
+                return;
             }
-        };
 
-        const radarChart = new Chart(ctx, config);
+            if (!confirm(`${sets[setId].name}을(를) 삭제하시겠습니까?`)) {
+                return;
+            }
 
-        function handleFileUpload(teamNum, input) {
+            // 차트 삭제
+            if (charts[setId]) {
+                charts[setId].destroy();
+                delete charts[setId];
+            }
+
+            // 데이터 삭제
+            delete sets[setId];
+
+            // DOM 요소 삭제
+            document.querySelector(`.set-tab[data-set="${setId}"]`).remove();
+            document.querySelector(`.set-content[data-set="${setId}"]`).remove();
+
+            // 다른 세트로 전환
+            if (currentSetId === setId) {
+                const remainingSetId = parseInt(Object.keys(sets)[0]);
+                switchSet(remainingSetId);
+            }
+        }
+
+        // 세트 이름 편집
+        function editSetName(setId, event) {
+            event.stopPropagation();
+            const nameSpan = event.target;
+            const currentName = nameSpan.textContent;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.style.cssText = 'border: 1px solid #ccc; padding: 2px 5px; font-size: 0.95em;';
+            
+            input.onblur = function() {
+                const newName = input.value.trim() || currentName;
+                sets[setId].name = newName;
+                nameSpan.textContent = newName;
+                nameSpan.style.display = '';
+                input.remove();
+            };
+            
+            input.onkeydown = function(e) {
+                if (e.key === 'Enter') {
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    nameSpan.style.display = '';
+                    input.remove();
+                }
+            };
+            
+            nameSpan.style.display = 'none';
+            nameSpan.parentNode.insertBefore(input, nameSpan);
+            input.focus();
+            input.select();
+        }
+
+        // 파일 업로드 처리
+        function handleFileUpload(setId, team, input) {
             const file = input.files[0];
             if (!file) return;
 
-            const statusEl = document.getElementById(`fileStatus${teamNum}`);
-            const boxEl = document.getElementById(`uploadBox${teamNum}`);
+            const content = input.closest('.set-content');
+            const statusEl = content.querySelector(`.file-status[data-team="${team}"]`);
             
             statusEl.textContent = '처리 중...';
             statusEl.className = 'file-status';
@@ -504,19 +817,15 @@
 
                     console.log('Loaded data rows:', jsonData.length);
                     console.log('First row:', jsonData[0]);
-                    console.log('Column names:', Object.keys(jsonData[0]));
 
-                    // 데이터 검증
                     if (jsonData.length !== 70) {
                         throw new Error(`70개의 태스크가 필요합니다 (현재: ${jsonData.length}개)`);
                     }
 
-                    // 프로세스별 평균 계산
                     const processAvg = {};
                     const processCounts = {};
                     
                     jsonData.forEach(row => {
-                        // 컬럼명 정규화 (공백 제거 등)
                         const normalizedRow = {};
                         Object.keys(row).forEach(key => {
                             normalizedRow[key.trim()] = row[key];
@@ -525,7 +834,6 @@
                         const process = normalizedRow['프로세스'];
                         const level = normalizedRow['적용 단계'];
                         
-                        // 유효성 검사
                         if (process == null || level == null || isNaN(level)) {
                             console.warn('Invalid row:', normalizedRow);
                             return;
@@ -540,10 +848,6 @@
                         processCounts[process]++;
                     });
 
-                    console.log('Process averages:', processAvg);
-                    console.log('Process counts:', processCounts);
-
-                    // 평균값 계산
                     for (let process in processAvg) {
                         processAvg[process] = processAvg[process] / processCounts[process];
                     }
@@ -554,16 +858,16 @@
                         counts: processCounts
                     };
 
-                    if (teamNum === 1) {
-                        teamAData = processedData;
+                    if (team === 'A') {
+                        sets[setId].teamAData = processedData;
                     } else {
-                        teamBData = processedData;
+                        sets[setId].teamBData = processedData;
                     }
 
                     statusEl.textContent = `✓ ${file.name}`;
                     statusEl.className = 'file-status success';
 
-                    updateChart();
+                    updateChart(setId);
                 } catch (error) {
                     statusEl.textContent = `✗ 오류: ${error.message}`;
                     statusEl.style.color = '#e74c3c';
@@ -574,30 +878,37 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function updateChart() {
+        // 차트 업데이트
+        function updateChart(setId) {
+            const teamAData = sets[setId].teamAData;
+            const teamBData = sets[setId].teamBData;
+            
             if (!teamAData && !teamBData) return;
 
-            // 프로세스 1~8까지 데이터 준비
             const processNumbers = [1, 2, 3, 4, 5, 6, 7, 8];
             
             if (teamAData) {
                 const data = processNumbers.map(p => teamAData.averages[p] || 0);
-                radarChart.data.datasets[0].data = data;
+                charts[setId].data.datasets[0].data = data;
             }
 
             if (teamBData) {
                 const data = processNumbers.map(p => teamBData.averages[p] || 0);
-                radarChart.data.datasets[1].data = data;
+                charts[setId].data.datasets[1].data = data;
             }
 
-            radarChart.update();
-            updateSummary();
-            updateTable();
+            charts[setId].update();
+            updateSummary(setId);
+            updateTable(setId);
         }
 
-        function updateSummary() {
-            const summaryDiv = document.getElementById('summaryCards');
+        // 요약 카드 업데이트
+        function updateSummary(setId) {
+            const summaryDiv = document.getElementById(`summary-${setId}`);
             summaryDiv.innerHTML = '';
+
+            const teamAData = sets[setId].teamAData;
+            const teamBData = sets[setId].teamBData;
 
             if (teamAData) {
                 const avgA = Object.values(teamAData.averages).reduce((a, b) => a + b, 0) / Object.values(teamAData.averages).length;
@@ -638,18 +949,17 @@
             }
         }
 
-        function updateTable() {
-            const tbody = document.getElementById('tableBody');
+        // 테이블 업데이트
+        function updateTable(setId) {
+            const tbody = document.getElementById(`table-${setId}`);
             tbody.innerHTML = '';
 
+            const teamAData = sets[setId].teamAData;
+            const teamBData = sets[setId].teamBData;
             const processNumbers = [1, 2, 3, 4, 5, 6, 7, 8];
             
             processNumbers.forEach(processNum => {
                 const row = document.createElement('tr');
-                
-                const countA = teamAData ? teamAData.counts[processNum] || 0 : 0;
-                const countB = teamBData ? teamBData.counts[processNum] || 0 : 0;
-                const count = Math.max(countA, countB);
                 
                 const avgA = teamAData ? (teamAData.averages[processNum] || 0) : 0;
                 const avgB = teamBData ? (teamBData.averages[processNum] || 0) : 0;
@@ -666,7 +976,6 @@
                 
                 row.innerHTML = `
                     <td><strong>프로세스 ${processNum}</strong></td>
-                    <td>${count}개</td>
                     <td class="value-cell team-a">${avgA.toFixed(2)}</td>
                     <td class="value-cell team-b">${avgB.toFixed(2)}</td>
                     <td class="diff-cell ${diffClass}">${diffSign}${diff.toFixed(2)}</td>
@@ -676,88 +985,91 @@
             });
         }
 
-        function downloadTemplate() {
-            // 샘플 데이터 생성 (70개 태스크)
-            const sampleData = [];
-            const processDistribution = [8, 17, 4, 11, 4, 6, 12, 8]; // 각 프로세스별 태스크 수
-            
-            let taskNum = 1;
-            let activityNum = 1;
-            
-            for (let processIdx = 0; processIdx < 8; processIdx++) {
-                const processNum = processIdx + 1;
-                const taskCount = processDistribution[processIdx];
-                
-                for (let i = 0; i < taskCount; i++) {
-                    sampleData.push({
-                        '프로세스': processNum,
-                        '액티비티': activityNum,
-                        '태스크': taskNum,
-                        '적용 단계': Math.floor(Math.random() * 3) // 0, 1, 2 랜덤
-                    });
-                    taskNum++;
-                    
-                    if ((i + 1) % 3 === 0) {
-                        activityNum++;
-                    }
-                }
-            }
-
-            // XLSX 생성
-            const ws = XLSX.utils.json_to_sheet(sampleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "팀데이터");
-            
-            // 다운로드
-            XLSX.writeFile(wb, "팀_데이터_템플릿.xlsx");
-        }
-
-        function downloadChartImage() {
-            // 현재 날짜를 파일명에 포함
+        // 차트 이미지 다운로드
+        function downloadChartImage(setId) {
             const today = new Date();
-            const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
-            const fileName = `현황비교_${dateStr}.png`;
+            const dateStr = today.toISOString().split('T')[0];
+            const timeStr = today.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            const setName = sets[setId].name;
+            const fileName = `현황비교_${setName}_${dateStr}.png`;
 
-            // 원본 캔버스
-            const originalCanvas = document.getElementById('radarChart');
-            
-            // 원본 캔버스의 실제 크기
+            const originalCanvas = document.getElementById(`chart-${setId}`);
             const originalWidth = originalCanvas.width;
             const originalHeight = originalCanvas.height;
             
-            // 정사각형 크기 결정 (높이 기준, 약간의 여백 추가)
-            const squareSize = Math.min(originalWidth, originalHeight);
+            const padding = 100;
+            const squareSize = Math.max(originalWidth, originalHeight) + (padding * 2);
             
-            // 새로운 정사각형 캔버스 생성
             const exportCanvas = document.createElement('canvas');
             exportCanvas.width = squareSize;
             exportCanvas.height = squareSize;
             const ctx = exportCanvas.getContext('2d');
             
-            // 흰색 배경 그리기
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, squareSize, squareSize);
             
-            // 원본 차트를 중앙에 배치하여 복사
-            // 좌우 여백 계산 (가로가 더 긴 경우)
-            const offsetX = (originalWidth - squareSize) / 2;
-            const offsetY = 0; // 높이는 그대로 사용
+            const destX = (squareSize - originalWidth) / 2;
+            const destY = (squareSize - originalHeight) / 2;
             
-            // 원본에서 정사각형 영역만 추출
             ctx.drawImage(
                 originalCanvas,
-                offsetX, offsetY, squareSize, squareSize, // 원본에서 추출할 영역
-                0, 0, squareSize, squareSize              // 새 캔버스에 그릴 위치
+                0, 0, originalWidth, originalHeight,
+                destX, destY, originalWidth, originalHeight
             );
             
-            // 고해상도로 변환
             const url = exportCanvas.toDataURL('image/png', 1.0);
             
-            // 다운로드 링크 생성
             const link = document.createElement('a');
             link.download = fileName;
             link.href = url;
             link.click();
+
+            addSnapshotToGallery(setId, url, dateStr, timeStr);
+        }
+
+        // 스냅샷 갤러리에 추가
+        function addSnapshotToGallery(setId, imageUrl, date, time) {
+            const grid = document.getElementById(`snapshot-grid-${setId}`);
+            
+            const emptyMsg = grid.querySelector('.snapshot-empty');
+            if (emptyMsg) {
+                emptyMsg.remove();
+            }
+
+            const item = document.createElement('div');
+            item.className = 'snapshot-item';
+            item.innerHTML = `
+                <button class="snapshot-delete" onclick="deleteSnapshot(${setId}, this)" title="삭제">✕</button>
+                <img src="${imageUrl}" alt="스냅샷 ${date}" onclick="openModal(${setId}, '${imageUrl}')">
+                <div class="snapshot-info">${date}<br>${time}</div>
+            `;
+
+            grid.insertBefore(item, grid.firstChild);
+        }
+
+        // 스냅샷 삭제
+        function deleteSnapshot(setId, button) {
+            const item = button.closest('.snapshot-item');
+            item.remove();
+
+            const grid = document.getElementById(`snapshot-grid-${setId}`);
+            if (grid.children.length === 0) {
+                grid.innerHTML = '<div class="snapshot-empty">저장 버튼을 눌러 스냅샷을 남겨보세요</div>';
+            }
+        }
+
+        // 모달 열기
+        function openModal(setId, imageUrl) {
+            const modal = document.getElementById(`modal-${setId}`);
+            const modalImage = modal.querySelector('img');
+            modalImage.src = imageUrl;
+            modal.classList.add('active');
+        }
+
+        // 모달 닫기
+        function closeModal(setId) {
+            const modal = document.getElementById(`modal-${setId}`);
+            modal.classList.remove('active');
         }
     </script>
 </body>

@@ -112,6 +112,24 @@
             background: #555;
         }
 
+        .file-input-label.team-a-btn {
+            background: #4682b4;
+            color: #2a2a2a;
+        }
+
+        .file-input-label.team-a-btn:hover {
+            background: #5a9bd4;
+        }
+
+        .file-input-label.team-b-btn {
+            background: #daa520;
+            color: #2a2a2a;
+        }
+
+        .file-input-label.team-b-btn:hover {
+            background: #f0b840;
+        }
+
         .file-status {
             margin-top: 8px;
             color: #666;
@@ -131,6 +149,31 @@
             background: #fafafa;
             border-radius: 10px;
             padding: 15px;
+        }
+
+        .chart-download-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 12px;
+            background: #6b6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.2s;
+            z-index: 10;
+        }
+
+        .chart-download-btn:hover {
+            transform: translateY(-1px);
+            background: #555;
+        }
+
+        .chart-download-btn:active {
+            transform: translateY(0);
         }
 
         .legend {
@@ -303,7 +346,7 @@
                     <h3>A팀 데이터</h3>
                     <div class="file-input-wrapper">
                         <input type="file" id="fileInput1" accept=".xlsx,.xls" onchange="handleFileUpload(1, this)">
-                        <label for="fileInput1" class="file-input-label">파일 선택</label>
+                        <label for="fileInput1" class="file-input-label team-a-btn">파일 선택</label>
                     </div>
                     <div class="file-status" id="fileStatus1">-</div>
                 </div>
@@ -312,7 +355,7 @@
                     <h3>B팀 데이터</h3>
                     <div class="file-input-wrapper">
                         <input type="file" id="fileInput2" accept=".xlsx,.xls" onchange="handleFileUpload(2, this)">
-                        <label for="fileInput2" class="file-input-label">파일 선택</label>
+                        <label for="fileInput2" class="file-input-label team-b-btn">파일 선택</label>
                     </div>
                     <div class="file-status" id="fileStatus2">-</div>
                 </div>
@@ -320,16 +363,19 @@
         </div>
 
         <div class="chart-wrapper">
+            <button class="chart-download-btn" onclick="downloadChartImage()">
+                <span>저장</span>
+            </button>
             <canvas id="radarChart"></canvas>
         </div>
 
         <div class="legend">
             <div class="legend-item">
-                <div class="legend-color" style="background: rgba(120, 120, 120, 0.6);"></div>
+                <div class="legend-color" style="background: rgba(70, 130, 180, 0.7);"></div>
                 <span>A팀</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background: rgba(80, 80, 80, 0.6);"></div>
+                <div class="legend-color" style="background: rgba(218, 165, 32, 0.7);"></div>
                 <span>B팀</span>
             </div>
         </div>
@@ -373,12 +419,12 @@
                         label: 'A팀',
                         data: [0, 0, 0, 0, 0, 0, 0, 0],
                         fill: true,
-                        backgroundColor: 'rgba(120, 120, 120, 0.2)',
-                        borderColor: 'rgb(120, 120, 120)',
-                        pointBackgroundColor: 'rgb(120, 120, 120)',
+                        backgroundColor: 'rgba(70, 130, 180, 0.2)',
+                        borderColor: 'rgb(70, 130, 180)',
+                        pointBackgroundColor: 'rgb(70, 130, 180)',
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(120, 120, 120)',
+                        pointHoverBorderColor: 'rgb(70, 130, 180)',
                         borderWidth: 3,
                         pointRadius: 6,
                         pointHoverRadius: 8
@@ -387,12 +433,12 @@
                         label: 'B팀',
                         data: [0, 0, 0, 0, 0, 0, 0, 0],
                         fill: true,
-                        backgroundColor: 'rgba(80, 80, 80, 0.2)',
-                        borderColor: 'rgb(80, 80, 80)',
-                        pointBackgroundColor: 'rgb(80, 80, 80)',
+                        backgroundColor: 'rgba(218, 165, 32, 0.2)',
+                        borderColor: 'rgb(218, 165, 32)',
+                        pointBackgroundColor: 'rgb(218, 165, 32)',
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(80, 80, 80)',
+                        pointHoverBorderColor: 'rgb(218, 165, 32)',
                         borderWidth: 3,
                         pointRadius: 6,
                         pointHoverRadius: 8
@@ -473,6 +519,10 @@
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
+                    console.log('Loaded data rows:', jsonData.length);
+                    console.log('First row:', jsonData[0]);
+                    console.log('Column names:', Object.keys(jsonData[0]));
+
                     // 데이터 검증
                     if (jsonData.length !== 70) {
                         throw new Error(`70개의 태스크가 필요합니다 (현재: ${jsonData.length}개)`);
@@ -483,17 +533,32 @@
                     const processCounts = {};
                     
                     jsonData.forEach(row => {
-                        const process = row['프로세스'];
-                        const level = row['적용 단계'];
+                        // 컬럼명 정규화 (공백 제거 등)
+                        const normalizedRow = {};
+                        Object.keys(row).forEach(key => {
+                            normalizedRow[key.trim()] = row[key];
+                        });
+                        
+                        const process = normalizedRow['프로세스'];
+                        const level = normalizedRow['적용 단계'];
+                        
+                        // 유효성 검사
+                        if (process == null || level == null || isNaN(level)) {
+                            console.warn('Invalid row:', normalizedRow);
+                            return;
+                        }
                         
                         if (!processAvg[process]) {
                             processAvg[process] = 0;
                             processCounts[process] = 0;
                         }
                         
-                        processAvg[process] += level;
+                        processAvg[process] += Number(level);
                         processCounts[process]++;
                     });
+
+                    console.log('Process averages:', processAvg);
+                    console.log('Process counts:', processCounts);
 
                     // 평균값 계산
                     for (let process in processAvg) {
@@ -663,6 +728,25 @@
             
             // 다운로드
             XLSX.writeFile(wb, "팀_데이터_템플릿.xlsx");
+        }
+
+        function downloadChartImage() {
+            // 현재 날짜를 파일명에 포함
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+            const fileName = `현황비교_${dateStr}.png`;
+
+            // 캔버스를 이미지로 변환
+            const canvas = document.getElementById('radarChart');
+            
+            // 고해상도로 변환 (2배 스케일)
+            const url = canvas.toDataURL('image/png', 1.0);
+            
+            // 다운로드 링크 생성
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = url;
+            link.click();
         }
     </script>
 </body>

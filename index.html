@@ -504,10 +504,118 @@
         let nextSetId = 2;
         let charts = {};
 
+        // 로컬 스토리지 키
+        const STORAGE_KEY = 'standardization_process_chart_data';
+
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
-            addNewSet(true); // 첫 세트 추가
+            loadFromStorage();
         });
+
+        // 로컬 스토리지에서 데이터 불러오기
+        function loadFromStorage() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    sets = parsed.sets || {};
+                    currentSetId = parsed.currentSetId || 1;
+                    nextSetId = parsed.nextSetId || 2;
+
+                    // 저장된 세트가 있으면 복원
+                    if (Object.keys(sets).length > 0) {
+                        Object.keys(sets).forEach((setId, index) => {
+                            const id = parseInt(setId);
+                            restoreSet(id, index === 0);
+                        });
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load from storage:', error);
+            }
+            
+            // 저장된 데이터가 없으면 첫 세트 추가
+            addNewSet(true);
+        }
+
+        // 로컬 스토리지에 저장
+        function saveToStorage() {
+            try {
+                const dataToSave = {
+                    sets: sets,
+                    currentSetId: currentSetId,
+                    nextSetId: nextSetId
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            } catch (error) {
+                console.error('Failed to save to storage:', error);
+            }
+        }
+
+        // 저장된 세트 복원
+        function restoreSet(setId, isFirst) {
+            // 탭 추가
+            const tabsContainer = document.getElementById('setTabs');
+            const addBtn = tabsContainer.querySelector('.add-set-btn');
+            
+            const tabHtml = `
+                <button class="set-tab ${isFirst ? 'active' : ''}" data-set="${setId}" onclick="switchSet(${setId})">
+                    <span class="set-tab-name" ondblclick="editSetName(${setId}, event)">${sets[setId].name}</span>
+                    <span class="set-tab-close" onclick="deleteSet(${setId}, event)">✕</span>
+                </button>
+            `;
+            
+            if (addBtn) {
+                addBtn.insertAdjacentHTML('beforebegin', tabHtml);
+            } else {
+                tabsContainer.innerHTML += tabHtml + '<button class="add-set-btn" onclick="addNewSet()">+ 세트 추가</button>';
+            }
+
+            // 컨텐츠 추가
+            const contentsContainer = document.getElementById('setContents');
+            const contentHtml = createSetContent(setId);
+            contentsContainer.insertAdjacentHTML('beforeend', contentHtml);
+
+            // 차트 초기화
+            initChart(setId);
+
+            // 저장된 데이터가 있으면 차트 업데이트
+            if (sets[setId].teamAData || sets[setId].teamBData) {
+                updateChart(setId);
+                
+                // 파일 상태 표시
+                const content = document.querySelector(`.set-content[data-set="${setId}"]`);
+                if (sets[setId].teamAData) {
+                    const statusA = content.querySelector(`.file-status[data-team="A"]`);
+                    statusA.textContent = '✓ 불러옴';
+                    statusA.className = 'file-status success';
+                }
+                if (sets[setId].teamBData) {
+                    const statusB = content.querySelector(`.file-status[data-team="B"]`);
+                    statusB.textContent = '✓ 불러옴';
+                    statusB.className = 'file-status success';
+                }
+            }
+
+            // 스냅샷 복원
+            if (sets[setId].snapshots && sets[setId].snapshots.length > 0) {
+                const grid = document.getElementById(`snapshot-grid-${setId}`);
+                const emptyMsg = grid.querySelector('.snapshot-empty');
+                if (emptyMsg) emptyMsg.remove();
+
+                sets[setId].snapshots.forEach(snapshot => {
+                    const item = document.createElement('div');
+                    item.className = 'snapshot-item';
+                    item.innerHTML = `
+                        <button class="snapshot-delete" onclick="deleteSnapshot(${setId}, this)" title="삭제">✕</button>
+                        <img src="${snapshot.imageUrl}" alt="스냅샷 ${snapshot.date}" onclick="openModal(${setId}, '${snapshot.imageUrl}')">
+                        <div class="snapshot-info">${snapshot.date}<br>${snapshot.time}</div>
+                    `;
+                    grid.appendChild(item);
+                });
+            }
+        }
 
         // 새 세트 추가
         function addNewSet(isFirst = false) {
@@ -516,7 +624,8 @@
             sets[setId] = {
                 teamAData: null,
                 teamBData: null,
-                name: `${Object.keys(sets).length + 1}세트`
+                name: `${Object.keys(sets).length + 1}세트`,
+                snapshots: []
             };
 
             // 탭 추가
@@ -547,6 +656,8 @@
             if (!isFirst) {
                 switchSet(setId);
             }
+
+            saveToStorage();
         }
 
         // 세트 컨텐츠 HTML 생성
@@ -760,6 +871,8 @@
                 const remainingSetId = parseInt(Object.keys(sets)[0]);
                 switchSet(remainingSetId);
             }
+
+            saveToStorage();
         }
 
         // 세트 이름 편집
@@ -779,6 +892,7 @@
                 nameSpan.textContent = newName;
                 nameSpan.style.display = '';
                 input.remove();
+                saveToStorage();
             };
             
             input.onkeydown = function(e) {
@@ -868,6 +982,7 @@
                     statusEl.className = 'file-status success';
 
                     updateChart(setId);
+                    saveToStorage();
                 } catch (error) {
                     statusEl.textContent = `✗ 오류: ${error.message}`;
                     statusEl.style.color = '#e74c3c';
@@ -1049,17 +1164,39 @@
             `;
 
             grid.insertBefore(item, grid.firstChild);
+
+            // 스냅샷 데이터 저장
+            if (!sets[setId].snapshots) {
+                sets[setId].snapshots = [];
+            }
+            sets[setId].snapshots.unshift({
+                imageUrl: imageUrl,
+                date: date,
+                time: time
+            });
+
+            saveToStorage();
         }
 
         // 스냅샷 삭제
         function deleteSnapshot(setId, button) {
             const item = button.closest('.snapshot-item');
+            const img = item.querySelector('img');
+            const imageUrl = img.src;
+            
             item.remove();
+
+            // 스냅샷 데이터에서 제거
+            if (sets[setId].snapshots) {
+                sets[setId].snapshots = sets[setId].snapshots.filter(s => s.imageUrl !== imageUrl);
+            }
 
             const grid = document.getElementById(`snapshot-grid-${setId}`);
             if (grid.children.length === 0) {
                 grid.innerHTML = '<div class="snapshot-empty">저장 버튼을 눌러 스냅샷을 남겨보세요</div>';
             }
+
+            saveToStorage();
         }
 
         // 모달 열기

@@ -1019,10 +1019,14 @@
             
             const url = exportCanvas.toDataURL('image/png', 1.0);
             
+            // 다운로드 링크 생성 및 클릭
             const link = document.createElement('a');
             link.download = fileName;
             link.href = url;
+            link.style.display = 'none';
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
 
             addSnapshotToGallery(setId, url, dateStr, timeStr);
         }

@@ -97,8 +97,36 @@
         }
 
         .file-upload-section {
-            padding: 15px 0;
+            padding: 15px;
             margin-bottom: 15px;
+            margin-top: 35px;
+            position: relative;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .reset-btn {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            padding: 6px 12px;
+            background: #6b6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-1px);
+            background: #555;
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
         }
 
         .upload-grid {
@@ -191,9 +219,8 @@
         }
 
         .chart-download-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            display: block;
+            margin-left: auto;
             padding: 6px 12px;
             background: #6b6b6b;
             color: white;
@@ -203,7 +230,7 @@
             font-size: 0.85em;
             font-weight: 600;
             transition: transform 0.2s, background 0.2s;
-            z-index: 10;
+            margin-top: 10px;
         }
 
         .chart-download-btn:hover {
@@ -335,6 +362,80 @@
             cursor: pointer;
             font-size: 1.2em;
             color: #333;
+        }
+
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .confirm-modal-content h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .confirm-modal-content p {
+            margin-bottom: 25px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .confirm-modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirm-modal-buttons button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .confirm-btn-yes {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .confirm-btn-yes:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .confirm-btn-no {
+            background: #6b6b6b;
+            color: white;
+        }
+
+        .confirm-btn-no:hover {
+            background: #555;
+            transform: translateY(-1px);
         }
 
         .legend {
@@ -484,16 +585,28 @@
 </head>
 <body>
     <div class="container">
-        <!-- 세트 탭 -->
+        <!-- 프로젝트 탭 -->
         <div class="set-tabs-container">
             <div class="set-tabs" id="setTabs">
                 <!-- 탭들이 동적으로 추가됨 -->
             </div>
         </div>
 
-        <!-- 세트별 컨텐츠 -->
+        <!-- 프로젝트별 컨텐츠 -->
         <div id="setContents">
             <!-- 컨텐츠가 동적으로 추가됨 -->
+        </div>
+
+        <!-- 확인 모달 -->
+        <div class="confirm-modal" id="confirmModal">
+            <div class="confirm-modal-content">
+                <h3 id="confirmTitle">확인</h3>
+                <p id="confirmMessage">정말 실행하시겠습니까?</p>
+                <div class="confirm-modal-buttons">
+                    <button class="confirm-btn-yes" id="confirmYes">확인</button>
+                    <button class="confirm-btn-no" id="confirmNo">취소</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -506,6 +619,38 @@
 
         // 로컬 스토리지 키
         const STORAGE_KEY = 'standardization_process_chart_data';
+
+        // 커스텀 확인 다이얼로그
+        function customConfirm(message, title = '확인') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                const titleEl = document.getElementById('confirmTitle');
+                const messageEl = document.getElementById('confirmMessage');
+                const yesBtn = document.getElementById('confirmYes');
+                const noBtn = document.getElementById('confirmNo');
+
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                modal.classList.add('active');
+
+                const handleYes = () => {
+                    modal.classList.remove('active');
+                    yesBtn.removeEventListener('click', handleYes);
+                    noBtn.removeEventListener('click', handleNo);
+                    resolve(true);
+                };
+
+                const handleNo = () => {
+                    modal.classList.remove('active');
+                    yesBtn.removeEventListener('click', handleYes);
+                    noBtn.removeEventListener('click', handleNo);
+                    resolve(false);
+                };
+
+                yesBtn.addEventListener('click', handleYes);
+                noBtn.addEventListener('click', handleNo);
+            });
+        }
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
@@ -522,7 +667,7 @@
                     currentSetId = parsed.currentSetId || 1;
                     nextSetId = parsed.nextSetId || 2;
 
-                    // 저장된 세트가 있으면 복원
+                    // 저장된 프로젝트가 있으면 복원
                     if (Object.keys(sets).length > 0) {
                         Object.keys(sets).forEach((setId, index) => {
                             const id = parseInt(setId);
@@ -535,7 +680,7 @@
                 console.error('Failed to load from storage:', error);
             }
             
-            // 저장된 데이터가 없으면 첫 세트 추가
+            // 저장된 데이터가 없으면 첫 프로젝트 추가
             addNewSet(true);
         }
 
@@ -553,23 +698,59 @@
             }
         }
 
-        // 저장된 세트 복원
+        // 저장된 프로젝트 복원
         function restoreSet(setId, isFirst) {
             // 탭 추가
             const tabsContainer = document.getElementById('setTabs');
             const addBtn = tabsContainer.querySelector('.add-set-btn');
             
             const tabHtml = `
-                <button class="set-tab ${isFirst ? 'active' : ''}" data-set="${setId}" onclick="switchSet(${setId})">
-                    <span class="set-tab-name" ondblclick="editSetName(${setId}, event)">${sets[setId].name}</span>
-                    <span class="set-tab-close" onclick="deleteSet(${setId}, event)">✕</span>
+                <button class="set-tab ${isFirst ? 'active' : ''}" data-set="${setId}">
+                    <span class="set-tab-name" data-set="${setId}">${sets[setId].name}</span>
+                    ${!isFirst ? `<span class="set-tab-close" data-set="${setId}">✕</span>` : ''}
                 </button>
             `;
             
             if (addBtn) {
                 addBtn.insertAdjacentHTML('beforebegin', tabHtml);
             } else {
-                tabsContainer.innerHTML += tabHtml + '<button class="add-set-btn" onclick="addNewSet()">+ 세트 추가</button>';
+                tabsContainer.innerHTML += tabHtml + '<button class="add-set-btn">+ 프로젝트 추가</button>';
+            }
+
+            // 탭 버튼 이벤트 리스너 추가
+            const newTab = tabsContainer.querySelector(`.set-tab[data-set="${setId}"]`);
+            if (newTab) {
+                // 탭 클릭
+                newTab.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('set-tab-close')) {
+                        switchSet(setId);
+                    }
+                });
+                
+                // 이름 더블클릭
+                const nameSpan = newTab.querySelector('.set-tab-name');
+                if (nameSpan) {
+                    nameSpan.addEventListener('dblclick', function(e) {
+                        editSetName(setId, e);
+                    });
+                }
+                
+                // X 버튼 클릭
+                const closeBtn = newTab.querySelector('.set-tab-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function(e) {
+                        deleteSet(setId, e);
+                    });
+                }
+            }
+
+            // + 프로젝트 추가 버튼 이벤트 리스너
+            const newAddBtn = tabsContainer.querySelector('.add-set-btn');
+            if (newAddBtn && !newAddBtn.hasAttribute('data-listener')) {
+                newAddBtn.setAttribute('data-listener', 'true');
+                newAddBtn.addEventListener('click', function() {
+                    addNewSet();
+                });
             }
 
             // 컨텐츠 추가
@@ -579,6 +760,22 @@
 
             // 차트 초기화
             initChart(setId);
+
+            // 초기화 버튼에 이벤트 리스너 추가
+            const resetBtn = contentsContainer.querySelector(`.set-content[data-set="${setId}"] .reset-btn`);
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    resetSet(setId);
+                });
+            }
+
+            // 저장 버튼에 이벤트 리스너 추가
+            const downloadBtn = contentsContainer.querySelector(`.set-content[data-set="${setId}"] .chart-download-btn`);
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    downloadChartImage(setId);
+                });
+            }
 
             // 저장된 데이터가 있으면 차트 업데이트
             if (sets[setId].teamAData || sets[setId].teamBData) {
@@ -617,14 +814,14 @@
             }
         }
 
-        // 새 세트 추가
+        // 새 프로젝트 추가
         function addNewSet(isFirst = false) {
             const setId = isFirst ? 1 : nextSetId++;
             
             sets[setId] = {
                 teamAData: null,
                 teamBData: null,
-                name: `${Object.keys(sets).length + 1}세트`,
+                name: `${Object.keys(sets).length + 1}번 프로젝트`,
                 snapshots: []
             };
 
@@ -633,16 +830,52 @@
             const addBtn = tabsContainer.querySelector('.add-set-btn');
             
             const tabHtml = `
-                <button class="set-tab ${isFirst ? 'active' : ''}" data-set="${setId}" onclick="switchSet(${setId})">
-                    <span class="set-tab-name" ondblclick="editSetName(${setId}, event)">${sets[setId].name}</span>
-                    ${!isFirst ? `<span class="set-tab-close" onclick="deleteSet(${setId}, event)">✕</span>` : ''}
+                <button class="set-tab ${isFirst ? 'active' : ''}" data-set="${setId}">
+                    <span class="set-tab-name" data-set="${setId}">${sets[setId].name}</span>
+                    ${!isFirst ? `<span class="set-tab-close" data-set="${setId}">✕</span>` : ''}
                 </button>
             `;
             
             if (addBtn) {
                 addBtn.insertAdjacentHTML('beforebegin', tabHtml);
             } else {
-                tabsContainer.innerHTML += tabHtml + '<button class="add-set-btn" onclick="addNewSet()">+ 세트 추가</button>';
+                tabsContainer.innerHTML += tabHtml + '<button class="add-set-btn">+ 프로젝트 추가</button>';
+            }
+
+            // 탭 버튼 이벤트 리스너 추가
+            const newTab = tabsContainer.querySelector(`.set-tab[data-set="${setId}"]`);
+            if (newTab) {
+                // 탭 클릭
+                newTab.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('set-tab-close')) {
+                        switchSet(setId);
+                    }
+                });
+                
+                // 이름 더블클릭
+                const nameSpan = newTab.querySelector('.set-tab-name');
+                if (nameSpan) {
+                    nameSpan.addEventListener('dblclick', function(e) {
+                        editSetName(setId, e);
+                    });
+                }
+                
+                // X 버튼 클릭
+                const closeBtn = newTab.querySelector('.set-tab-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function(e) {
+                        deleteSet(setId, e);
+                    });
+                }
+            }
+
+            // + 프로젝트 추가 버튼 이벤트 리스너
+            const newAddBtn = tabsContainer.querySelector('.add-set-btn');
+            if (newAddBtn && !newAddBtn.hasAttribute('data-listener')) {
+                newAddBtn.setAttribute('data-listener', 'true');
+                newAddBtn.addEventListener('click', function() {
+                    addNewSet();
+                });
             }
 
             // 컨텐츠 추가
@@ -653,6 +886,22 @@
             // 차트 초기화
             initChart(setId);
 
+            // 초기화 버튼에 이벤트 리스너 추가
+            const resetBtn = contentsContainer.querySelector(`.set-content[data-set="${setId}"] .reset-btn`);
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    resetSet(setId);
+                });
+            }
+
+            // 저장 버튼에 이벤트 리스너 추가
+            const downloadBtn = contentsContainer.querySelector(`.set-content[data-set="${setId}"] .chart-download-btn`);
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    downloadChartImage(setId);
+                });
+            }
+
             if (!isFirst) {
                 switchSet(setId);
             }
@@ -660,16 +909,19 @@
             saveToStorage();
         }
 
-        // 세트 컨텐츠 HTML 생성
+        // 프로젝트 컨텐츠 HTML 생성
         function createSetContent(setId) {
             return `
                 <div class="set-content ${setId === 1 ? 'active' : ''}" data-set="${setId}">
                     <div class="file-upload-section">
+                        <button class="reset-btn" data-set-id="${setId}">
+                            <span>초기화</span>
+                        </button>
                         <div class="upload-grid">
                             <div class="upload-box">
                                 <div class="file-input-wrapper">
                                     <input type="file" id="fileA-${setId}" accept=".xlsx,.xls" onchange="handleFileUpload(${setId}, 'A', this)">
-                                    <label for="fileA-${setId}" class="file-input-label team-a-btn">A팀 파일 선택</label>
+                                    <label for="fileA-${setId}" class="file-input-label team-a-btn">NW 파일 선택</label>
                                 </div>
                                 <div class="file-status" data-team="A">-</div>
                             </div>
@@ -677,28 +929,29 @@
                             <div class="upload-box">
                                 <div class="file-input-wrapper">
                                     <input type="file" id="fileB-${setId}" accept=".xlsx,.xls" onchange="handleFileUpload(${setId}, 'B', this)">
-                                    <label for="fileB-${setId}" class="file-input-label team-b-btn">B팀 파일 선택</label>
+                                    <label for="fileB-${setId}" class="file-input-label team-b-btn">VN 파일 선택</label>
                                 </div>
                                 <div class="file-status" data-team="B">-</div>
                             </div>
                         </div>
                     </div>
 
+                    <button class="chart-download-btn">
+                        <span>스냅샷 저장</span>
+                    </button>
+
                     <div class="chart-wrapper">
-                        <button class="chart-download-btn" onclick="downloadChartImage(${setId})">
-                            <span>저장</span>
-                        </button>
                         <canvas id="chart-${setId}"></canvas>
                     </div>
 
                     <div class="legend">
                         <div class="legend-item">
                             <div class="legend-color" style="background: rgba(70, 130, 180, 0.7);"></div>
-                            <span>A팀</span>
+                            <span>NW</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background: rgba(218, 165, 32, 0.7);"></div>
-                            <span>B팀</span>
+                            <span>VN</span>
                         </div>
                     </div>
 
@@ -724,8 +977,8 @@
                             <thead>
                                 <tr>
                                     <th>프로세스</th>
-                                    <th>A팀 평균</th>
-                                    <th>B팀 평균</th>
+                                    <th>NW 평균</th>
+                                    <th>VN 평균</th>
                                     <th>차이 (B-A)</th>
                                 </tr>
                             </thead>
@@ -750,7 +1003,7 @@
                     labels: ['프로세스 1', '프로세스 2', '프로세스 3', '프로세스 4', '프로세스 5', '프로세스 6', '프로세스 7', '프로세스 8'],
                     datasets: [
                         {
-                            label: 'A팀',
+                            label: 'NW',
                             data: [0, 0, 0, 0, 0, 0, 0, 0],
                             fill: true,
                             backgroundColor: 'rgba(70, 130, 180, 0.2)',
@@ -764,7 +1017,7 @@
                             pointHoverRadius: 5
                         },
                         {
-                            label: 'B팀',
+                            label: 'VN',
                             data: [0, 0, 0, 0, 0, 0, 0, 0],
                             fill: true,
                             backgroundColor: 'rgba(218, 165, 32, 0.2)',
@@ -819,7 +1072,7 @@
             });
         }
 
-        // 세트 전환
+        // 프로젝트 전환
         function switchSet(setId) {
             currentSetId = setId;
 
@@ -840,16 +1093,17 @@
             document.querySelector(`.set-content[data-set="${setId}"]`).classList.add('active');
         }
 
-        // 세트 삭제
-        function deleteSet(setId, event) {
+        // 프로젝트 삭제
+        async function deleteSet(setId, event) {
             event.stopPropagation();
             
             if (Object.keys(sets).length === 1) {
-                alert('최소 1개의 세트가 필요합니다.');
+                await customConfirm('최소 1개의 프로젝트가 필요합니다.', '알림');
                 return;
             }
 
-            if (!confirm(`${sets[setId].name}을(를) 삭제하시겠습니까?`)) {
+            const confirmed = await customConfirm(`${sets[setId].name}을(를) 삭제하시겠습니까?`, '프로젝트 삭제');
+            if (!confirmed) {
                 return;
             }
 
@@ -866,7 +1120,7 @@
             document.querySelector(`.set-tab[data-set="${setId}"]`).remove();
             document.querySelector(`.set-content[data-set="${setId}"]`).remove();
 
-            // 다른 세트로 전환
+            // 다른 프로젝트로 전환
             if (currentSetId === setId) {
                 const remainingSetId = parseInt(Object.keys(sets)[0]);
                 switchSet(remainingSetId);
@@ -875,7 +1129,7 @@
             saveToStorage();
         }
 
-        // 세트 이름 편집
+        // 프로젝트 이름 편집
         function editSetName(setId, event) {
             event.stopPropagation();
             const nameSpan = event.target;
@@ -1029,7 +1283,7 @@
                 const avgA = Object.values(teamAData.averages).reduce((a, b) => a + b, 0) / Object.values(teamAData.averages).length;
                 summaryDiv.innerHTML += `
                     <div class="summary-card">
-                        <h3>A팀 전체 평균</h3>
+                        <h3>NW 전체 평균</h3>
                         <div class="value team-a">${avgA.toFixed(2)}</div>
                         <div class="label">70개 태스크</div>
                     </div>
@@ -1040,7 +1294,7 @@
                 const avgB = Object.values(teamBData.averages).reduce((a, b) => a + b, 0) / Object.values(teamBData.averages).length;
                 summaryDiv.innerHTML += `
                     <div class="summary-card">
-                        <h3>B팀 전체 평균</h3>
+                        <h3>VN 전체 평균</h3>
                         <div class="value team-b">${avgB.toFixed(2)}</div>
                         <div class="label">70개 태스크</div>
                     </div>
@@ -1058,7 +1312,7 @@
                         <div class="value ${diff > 0 ? 'diff-positive' : diff < 0 ? 'diff-negative' : 'diff-neutral'}">
                             ${diff > 0 ? '+' : ''}${diff.toFixed(2)}
                         </div>
-                        <div class="label">B팀 - A팀</div>
+                        <div class="label">VN - NW</div>
                     </div>
                 `;
             }
@@ -1098,6 +1352,69 @@
                 
                 tbody.appendChild(row);
             });
+        }
+
+        // 프로젝트 초기화
+        async function resetSet(setId) {
+            console.log('Reset set called for:', setId);
+            
+            const confirmed = await customConfirm('현재 프로젝트의 업로드된 파일과 차트를 초기화하시겠습니까?\n(스냅샷은 유지됩니다)', '프로젝트 초기화');
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                // 데이터 초기화
+                sets[setId].teamAData = null;
+                sets[setId].teamBData = null;
+
+                // 파일 상태 초기화
+                const content = document.querySelector(`.set-content[data-set="${setId}"]`);
+                if (!content) {
+                    console.error('Content not found for set:', setId);
+                    return;
+                }
+
+                const statusA = content.querySelector(`.file-status[data-team="A"]`);
+                const statusB = content.querySelector(`.file-status[data-team="B"]`);
+                const inputA = content.querySelector(`#fileA-${setId}`);
+                const inputB = content.querySelector(`#fileB-${setId}`);
+
+                if (statusA) {
+                    statusA.textContent = '-';
+                    statusA.className = 'file-status';
+                }
+                if (statusB) {
+                    statusB.textContent = '-';
+                    statusB.className = 'file-status';
+                }
+                
+                if (inputA) inputA.value = '';
+                if (inputB) inputB.value = '';
+
+                // 차트 초기화
+                if (charts[setId]) {
+                    charts[setId].data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0, 0];
+                    charts[setId].data.datasets[1].data = [0, 0, 0, 0, 0, 0, 0, 0];
+                    charts[setId].update();
+                }
+
+                // 요약 카드 초기화
+                const summaryDiv = document.getElementById(`summary-${setId}`);
+                if (summaryDiv) summaryDiv.innerHTML = '';
+
+                // 테이블 초기화
+                const tbody = document.getElementById(`table-${setId}`);
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="color: #999;">데이터를 업로드하면 여기에 표시됩니다</td></tr>';
+                }
+
+                saveToStorage();
+                console.log('Reset completed successfully');
+            } catch (error) {
+                console.error('Error in resetSet:', error);
+                await customConfirm('초기화 중 오류가 발생했습니다.', '오류');
+            }
         }
 
         // 차트 이미지 다운로드

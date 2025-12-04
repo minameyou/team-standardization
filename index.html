@@ -474,6 +474,264 @@
             text-align: center;
         }
 
+        .task-detail-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .task-detail-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .task-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .task-header {
+            margin-bottom: 10px;
+        }
+
+        .task-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .task-name::before {
+            content: '';
+            display: inline;
+        }
+
+        .task-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .task-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-bar-label {
+            font-size: 0.75em;
+            font-weight: 600;
+            width: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-bar-label-nw {
+            color: #4682b4;
+        }
+
+        .task-bar-label-vn {
+            color: #daa520;
+        }
+
+        .task-bar-track {
+            flex: 1;
+            height: 7px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .task-bar-track::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(to right, transparent 24.9%, #ddd 25%, #ddd 25.1%, transparent 25.1%),
+                linear-gradient(to right, transparent 49.9%, #ddd 50%, #ddd 50.1%, transparent 50.1%),
+                linear-gradient(to right, transparent 74.9%, #ddd 75%, #ddd 75.1%, transparent 75.1%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .task-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 0;
+        }
+
+        .task-bar-nw {
+            background: linear-gradient(90deg, #4682b4 0%, #5a9bd4 100%);
+        }
+
+        .task-bar-vn {
+            background: linear-gradient(90deg, #daa520 0%, #f0b840 100%);
+        }
+
+        .process-group {
+            margin-bottom: 30px;
+        }
+
+        .process-group-header {
+            background: #6b6b6b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .level-diff-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .level-diff-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .diff-category {
+            margin-bottom: 25px;
+        }
+
+        .diff-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .diff-category-vn-ahead {
+            background: linear-gradient(135deg, #daa520 0%, #f0b840 100%);
+            color: white;
+        }
+
+        .diff-category-nw-ahead {
+            background: linear-gradient(135deg, #4682b4 0%, #5a9bd4 100%);
+            color: white;
+        }
+
+        .diff-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .diff-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .diff-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .diff-item-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .diff-item-info {
+            min-width: 0;
+            flex: 1;
+            max-width: 60%;
+        }
+
+        .diff-item-process {
+            font-size: 0.95em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .diff-item-task {
+            font-size: 0.9em;
+            color: #333;
+            font-weight: 500;
+            display: none;
+        }
+
+        .diff-item-levels {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 150px;
+            justify-content: flex-start;
+        }
+
+        .diff-item-level {
+            font-weight: 600;
+        }
+
+        .diff-item-level-nw {
+            color: #4682b4;
+        }
+
+        .diff-item-level-vn {
+            color: #daa520;
+        }
+
+        .diff-item-arrow {
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        .diff-item-gap {
+            font-weight: 700;
+            font-size: 1.1em;
+            padding: 5px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .diff-item-gap-positive {
+            background: rgba(218, 165, 32, 0.15);
+            color: #daa520;
+            border: 1px solid #daa520;
+        }
+
+        .diff-item-gap-negative {
+            background: rgba(70, 130, 180, 0.15);
+            color: #4682b4;
+            border: 1px solid #4682b4;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -487,6 +745,10 @@
             padding: 15px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody td:first-child {
+            font-size: 0.7em;
         }
 
         th {
@@ -542,7 +804,7 @@
 
         .summary-card {
             background: white;
-            padding: 25px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             text-align: center;
@@ -551,15 +813,15 @@
 
         .summary-card h3 {
             color: #666;
-            margin-bottom: 10px;
-            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-size: 0.85em;
             text-transform: uppercase;
         }
 
         .summary-card .value {
-            font-size: 2em;
+            font-size: 1.6em;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             color: #4a4a4a;
         }
 
@@ -611,6 +873,18 @@
     </div>
 
     <script>
+        // 프로세스 이름 매핑
+        const processNames = {
+            1: '업무 요청 접수',
+            2: '테스트 계획',
+            3: '테스트 환경 구축 및 유지보수',
+            4: '테스트 설계 및 구현',
+            5: '테스트 실행',
+            6: '테스트 이슈 관리',
+            7: '테스트 모니터링 및 제어',
+            8: '테스트 마감 활동'
+        };
+
         // 전역 변수
         let sets = {};
         let currentSetId = 1;
@@ -727,10 +1001,11 @@
                     }
                 });
                 
-                // 이름 더블클릭
+                // 이름 클릭 (싱글 클릭으로 수정)
                 const nameSpan = newTab.querySelector('.set-tab-name');
                 if (nameSpan) {
-                    nameSpan.addEventListener('dblclick', function(e) {
+                    nameSpan.addEventListener('click', function(e) {
+                        e.stopPropagation();
                         editSetName(setId, e);
                     });
                 }
@@ -852,10 +1127,11 @@
                     }
                 });
                 
-                // 이름 더블클릭
+                // 이름 클릭 (싱글 클릭으로 수정)
                 const nameSpan = newTab.querySelector('.set-tab-name');
                 if (nameSpan) {
-                    nameSpan.addEventListener('dblclick', function(e) {
+                    nameSpan.addEventListener('click', function(e) {
+                        e.stopPropagation();
                         editSetName(setId, e);
                     });
                 }
@@ -972,7 +1248,7 @@
                     <div class="summary-cards" id="summary-${setId}"></div>
 
                     <div class="comparison-table">
-                        <h2>프로세스별 상세 비교</h2>
+                        <h2>프로세스별 평균 비교</h2>
                         <table>
                             <thead>
                                 <tr>
@@ -989,6 +1265,20 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="task-detail-section" id="task-detail-${setId}">
+                        <h2>태스크별 적용 단계 비교</h2>
+                        <div class="task-detail-content">
+                            <p style="color: #999; text-align: center; padding: 40px;">데이터를 업로드하면 태스크별 비교 그래프가 표시됩니다</p>
+                        </div>
+                    </div>
+
+                    <div class="level-diff-section" id="level-diff-${setId}">
+                        <h2>적용 단계 차이</h2>
+                        <div class="level-diff-content">
+                            <p style="color: #999; text-align: center; padding: 40px;">데이터를 업로드하면 레벨 차이가 큰 태스크를 분석합니다</p>
+                        </div>
+                    </div>
                 </div>
             `;
         }
@@ -1000,7 +1290,16 @@
             charts[setId] = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['프로세스 1', '프로세스 2', '프로세스 3', '프로세스 4', '프로세스 5', '프로세스 6', '프로세스 7', '프로세스 8'],
+                    labels: [
+                        processNames[1],
+                        processNames[2],
+                        processNames[3],
+                        processNames[4],
+                        processNames[5],
+                        processNames[6],
+                        processNames[7],
+                        processNames[8]
+                    ],
                     datasets: [
                         {
                             label: 'NW',
@@ -1047,7 +1346,7 @@
                                 callback: function(value) { return value; }
                             },
                             pointLabels: {
-                                font: { size: 16, weight: 'bold' },
+                                font: { size: 11, weight: 'bold' },
                                 color: '#000000'
                             },
                             grid: { color: 'rgba(0, 0, 0, 0.15)' },
@@ -1199,12 +1498,20 @@
                             normalizedRow[key.trim()] = row[key];
                         });
                         
-                        const process = normalizedRow['프로세스'];
+                        let process = normalizedRow['프로세스'];
                         const level = normalizedRow['적용 단계'];
                         
                         if (process == null || level == null || isNaN(level)) {
                             console.warn('Invalid row:', normalizedRow);
                             return;
+                        }
+                        
+                        // 프로세스 이름을 번호로 변환 (역매핑)
+                        if (typeof process === 'string') {
+                            const processEntry = Object.entries(processNames).find(([num, name]) => name === process);
+                            if (processEntry) {
+                                process = parseInt(processEntry[0]);
+                            }
                         }
                         
                         if (!processAvg[process]) {
@@ -1281,10 +1588,11 @@
 
             if (teamAData) {
                 const avgA = Object.values(teamAData.averages).reduce((a, b) => a + b, 0) / Object.values(teamAData.averages).length;
+                const avgADisplay = isNaN(avgA) ? '' : avgA.toFixed(2);
                 summaryDiv.innerHTML += `
                     <div class="summary-card">
                         <h3>NW 전체 평균</h3>
-                        <div class="value team-a">${avgA.toFixed(2)}</div>
+                        <div class="value team-a">${avgADisplay}</div>
                         <div class="label">70개 태스크</div>
                     </div>
                 `;
@@ -1292,10 +1600,11 @@
 
             if (teamBData) {
                 const avgB = Object.values(teamBData.averages).reduce((a, b) => a + b, 0) / Object.values(teamBData.averages).length;
+                const avgBDisplay = isNaN(avgB) ? '' : avgB.toFixed(2);
                 summaryDiv.innerHTML += `
                     <div class="summary-card">
                         <h3>VN 전체 평균</h3>
-                        <div class="value team-b">${avgB.toFixed(2)}</div>
+                        <div class="value team-b">${avgBDisplay}</div>
                         <div class="label">70개 태스크</div>
                     </div>
                 `;
@@ -1305,12 +1614,13 @@
                 const avgA = Object.values(teamAData.averages).reduce((a, b) => a + b, 0) / Object.values(teamAData.averages).length;
                 const avgB = Object.values(teamBData.averages).reduce((a, b) => a + b, 0) / Object.values(teamBData.averages).length;
                 const diff = avgB - avgA;
+                const diffDisplay = isNaN(diff) ? '' : (diff > 0 ? '+' : '') + diff.toFixed(2);
                 
                 summaryDiv.innerHTML += `
                     <div class="summary-card">
                         <h3>평균 차이</h3>
                         <div class="value ${diff > 0 ? 'diff-positive' : diff < 0 ? 'diff-negative' : 'diff-neutral'}">
-                            ${diff > 0 ? '+' : ''}${diff.toFixed(2)}
+                            ${diffDisplay}
                         </div>
                         <div class="label">VN - NW</div>
                     </div>
@@ -1334,6 +1644,10 @@
                 const avgB = teamBData ? (teamBData.averages[processNum] || 0) : 0;
                 const diff = avgB - avgA;
                 
+                const avgADisplay = isNaN(avgA) ? '' : avgA.toFixed(2);
+                const avgBDisplay = isNaN(avgB) ? '' : avgB.toFixed(2);
+                const diffDisplay = isNaN(diff) ? '' : (diff > 0 ? '+' : '') + diff.toFixed(2);
+                
                 let diffClass = 'diff-neutral';
                 let diffSign = '';
                 if (diff > 0) {
@@ -1344,14 +1658,323 @@
                 }
                 
                 row.innerHTML = `
-                    <td><strong>프로세스 ${processNum}</strong></td>
-                    <td class="value-cell team-a">${avgA.toFixed(2)}</td>
-                    <td class="value-cell team-b">${avgB.toFixed(2)}</td>
-                    <td class="diff-cell ${diffClass}">${diffSign}${diff.toFixed(2)}</td>
+                    <td><strong>${processNames[processNum]}</strong></td>
+                    <td class="value-cell team-a">${avgADisplay}</td>
+                    <td class="value-cell team-b">${avgBDisplay}</td>
+                    <td class="diff-cell ${diffClass}">${diffDisplay}</td>
                 `;
                 
                 tbody.appendChild(row);
             });
+
+            // 태스크별 적용 단계 비교 업데이트
+            updateTaskDetail(setId);
+            
+            // 적용 단계 차이 업데이트
+            updateLevelDiffAnalysis(setId);
+        }
+
+        // 태스크별 적용 단계 비교 업데이트
+        function updateTaskDetail(setId) {
+            const container = document.querySelector(`#task-detail-${setId} .task-detail-content`);
+            if (!container) return;
+
+            const teamAData = sets[setId].teamAData;
+            const teamBData = sets[setId].teamBData;
+
+            if (!teamAData && !teamBData) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">데이터를 업로드하면 태스크별 비교 그래프가 표시됩니다</p>';
+                return;
+            }
+
+            // 프로세스별로 태스크 그룹화
+            const tasksByProcess = {};
+            
+            if (teamAData && teamAData.raw) {
+                teamAData.raw.forEach(row => {
+                    let process = row['프로세스'] || row['프로세스 '];
+                    const activity = row['액티비티'] || row['액티비티 '];
+                    const task = row['태스크'] || row['태스크 '];
+                    const level = row['적용 단계'] || row['적용 단계 '];
+
+                    // 프로세스 이름을 번호로 변환
+                    if (typeof process === 'string') {
+                        const processEntry = Object.entries(processNames).find(([num, name]) => name === process);
+                        if (processEntry) {
+                            process = parseInt(processEntry[0]);
+                        }
+                    }
+
+                    if (!tasksByProcess[process]) {
+                        tasksByProcess[process] = [];
+                    }
+
+                    const existing = tasksByProcess[process].find(t => t.task === task);
+                    if (existing) {
+                        existing.nw = Number(level);
+                    } else {
+                        tasksByProcess[process].push({
+                            activity: activity,
+                            task: task,
+                            nw: Number(level),
+                            vn: 0
+                        });
+                    }
+                });
+            }
+
+            if (teamBData && teamBData.raw) {
+                teamBData.raw.forEach(row => {
+                    let process = row['프로세스'] || row['프로세스 '];
+                    const activity = row['액티비티'] || row['액티비티 '];
+                    const task = row['태스크'] || row['태스크 '];
+                    const level = row['적용 단계'] || row['적용 단계 '];
+
+                    // 프로세스 이름을 번호로 변환
+                    if (typeof process === 'string') {
+                        const processEntry = Object.entries(processNames).find(([num, name]) => name === process);
+                        if (processEntry) {
+                            process = parseInt(processEntry[0]);
+                        }
+                    }
+
+                    if (!tasksByProcess[process]) {
+                        tasksByProcess[process] = [];
+                    }
+
+                    const existing = tasksByProcess[process].find(t => t.task === task);
+                    if (existing) {
+                        existing.vn = Number(level);
+                    } else {
+                        tasksByProcess[process].push({
+                            activity: activity,
+                            task: task,
+                            nw: 0,
+                            vn: Number(level)
+                        });
+                    }
+                });
+            }
+
+            // HTML 생성
+            let html = '';
+            const processNumbers = [1, 2, 3, 4, 5, 6, 7, 8];
+            
+            processNumbers.forEach(processNum => {
+                if (tasksByProcess[processNum] && tasksByProcess[processNum].length > 0) {
+                    html += `<div class="process-group">`;
+                    html += `<div class="process-group-header">${processNames[processNum]}</div>`;
+                    
+                    tasksByProcess[processNum].forEach(taskItem => {
+                        // 레벨 0 = 0%, 레벨 1 = 25%, 레벨 2 = 50%, 레벨 3 = 75%, 레벨 4 = 100%
+                        const nwValue = isNaN(taskItem.nw) || taskItem.nw === null || taskItem.nw === undefined ? 0 : taskItem.nw;
+                        const vnValue = isNaN(taskItem.vn) || taskItem.vn === null || taskItem.vn === undefined ? 0 : taskItem.vn;
+                        const nwWidth = nwValue * 25;
+                        const vnWidth = vnValue * 25;
+                        const nwDisplay = nwValue === 0 ? '' : nwValue;
+                        const vnDisplay = vnValue === 0 ? '' : vnValue;
+                        
+                        html += `
+                            <div class="task-item">
+                                <div class="task-header">
+                                    <div class="task-name">${taskItem.task}</div>
+                                </div>
+                                <div class="task-bars">
+                                    <div class="task-bar-container">
+                                        <div class="task-bar-label task-bar-label-nw">
+                                            <span>NW</span>
+                                            <span>${nwDisplay}</span>
+                                        </div>
+                                        <div class="task-bar-track">
+                                            <div class="task-bar task-bar-nw" style="width: ${nwWidth}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="task-bar-container">
+                                        <div class="task-bar-label task-bar-label-vn">
+                                            <span>VN</span>
+                                            <span>${vnDisplay}</span>
+                                        </div>
+                                        <div class="task-bar-track">
+                                            <div class="task-bar task-bar-vn" style="width: ${vnWidth}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 적용 단계 차이 업데이트
+        function updateLevelDiffAnalysis(setId) {
+            const container = document.querySelector(`#level-diff-${setId} .level-diff-content`);
+            if (!container) return;
+
+            const teamAData = sets[setId].teamAData;
+            const teamBData = sets[setId].teamBData;
+
+            if (!teamAData || !teamBData) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">두 팀의 데이터를 모두 업로드하면 레벨 차이를 분석합니다</p>';
+                return;
+            }
+
+            // 모든 태스크의 레벨 차이 계산
+            const allTasks = [];
+            
+            if (teamAData.raw && teamBData.raw) {
+                const taskMap = new Map();
+                
+                // NW 데이터 수집
+                teamAData.raw.forEach(row => {
+                    let process = row['프로세스'] || row['프로세스 '];
+                    const task = row['태스크'] || row['태스크 '];
+                    const level = row['적용 단계'] || row['적용 단계 '];
+
+                    if (typeof process === 'string') {
+                        const processEntry = Object.entries(processNames).find(([num, name]) => name === process);
+                        if (processEntry) process = parseInt(processEntry[0]);
+                    }
+
+                    const key = `${process}-${task}`;
+                    taskMap.set(key, {
+                        process: process,
+                        processName: processNames[process],
+                        task: task,
+                        nw: Number(level) || 0,
+                        vn: 0
+                    });
+                });
+
+                // VN 데이터 병합
+                teamBData.raw.forEach(row => {
+                    let process = row['프로세스'] || row['프로세스 '];
+                    const task = row['태스크'] || row['태스크 '];
+                    const level = row['적용 단계'] || row['적용 단계 '];
+
+                    if (typeof process === 'string') {
+                        const processEntry = Object.entries(processNames).find(([num, name]) => name === process);
+                        if (processEntry) process = parseInt(processEntry[0]);
+                    }
+
+                    const key = `${process}-${task}`;
+                    if (taskMap.has(key)) {
+                        taskMap.get(key).vn = Number(level) || 0;
+                    } else {
+                        taskMap.set(key, {
+                            process: process,
+                            processName: processNames[process],
+                            task: task,
+                            nw: 0,
+                            vn: Number(level) || 0
+                        });
+                    }
+                });
+
+                // 차이 계산 및 정렬
+                taskMap.forEach(taskData => {
+                    const diff = taskData.vn - taskData.nw;
+                    if (diff !== 0) {
+                        allTasks.push({
+                            ...taskData,
+                            diff: diff,
+                            absDiff: Math.abs(diff)
+                        });
+                    }
+                });
+
+                // 절대값 기준 내림차순 정렬
+                allTasks.sort((a, b) => b.absDiff - a.absDiff);
+            }
+
+            if (allTasks.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">두 팀 간 레벨 차이가 있는 태스크가 없습니다</p>';
+                return;
+            }
+
+            // VN이 높은 태스크와 NW가 높은 태스크 분리
+            const vnAhead = allTasks.filter(t => t.diff > 0).slice(0, 10);
+            const nwAhead = allTasks.filter(t => t.diff < 0).slice(0, 10);
+
+            let html = '';
+
+            // NW가 높은 태스크 (먼저 표시)
+            if (nwAhead.length > 0) {
+                html += `
+                    <div class="diff-category">
+                        <div class="diff-category-header diff-category-nw-ahead">
+                            <span>NW가 높은 태스크</span>
+                            <span class="diff-badge">${nwAhead.length}개</span>
+                        </div>
+                        <div class="diff-list">
+                `;
+
+                nwAhead.forEach(task => {
+                    html += `
+                        <div class="diff-item">
+                            <div class="diff-item-left">
+                                <div class="diff-item-info">
+                                    <div class="diff-item-process">${task.processName}</div>
+                                    <div class="diff-item-task">${task.task}</div>
+                                </div>
+                                <div class="diff-item-levels">
+                                    <span class="diff-item-level diff-item-level-nw">NW ${task.nw}</span>
+                                    <span class="diff-item-arrow">→</span>
+                                    <span class="diff-item-level diff-item-level-vn">VN ${task.vn}</span>
+                                </div>
+                            </div>
+                            <div class="diff-item-gap diff-item-gap-negative">${task.diff} 차이</div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            // VN이 높은 태스크 (나중에 표시)
+            if (vnAhead.length > 0) {
+                html += `
+                    <div class="diff-category">
+                        <div class="diff-category-header diff-category-vn-ahead">
+                            <span>VN이 높은 태스크</span>
+                            <span class="diff-badge">${vnAhead.length}개</span>
+                        </div>
+                        <div class="diff-list">
+                `;
+
+                vnAhead.forEach(task => {
+                    html += `
+                        <div class="diff-item">
+                            <div class="diff-item-left">
+                                <div class="diff-item-info">
+                                    <div class="diff-item-process">${task.processName}</div>
+                                    <div class="diff-item-task">${task.task}</div>
+                                </div>
+                                <div class="diff-item-levels">
+                                    <span class="diff-item-level diff-item-level-nw">NW ${task.nw}</span>
+                                    <span class="diff-item-arrow">→</span>
+                                    <span class="diff-item-level diff-item-level-vn">VN ${task.vn}</span>
+                                </div>
+                            </div>
+                            <div class="diff-item-gap diff-item-gap-positive">+${task.diff} 차이</div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
         }
 
         // 프로젝트 초기화

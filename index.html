@@ -542,6 +542,7 @@
 
         .task-bar-track {
             flex: 1;
+            max-width: 400px;
             height: 7px;
             background: #f0f0f0;
             border-radius: 4px;
@@ -885,6 +886,51 @@
             8: '테스트 마감 활동'
         };
 
+        // 베트남어-한국어 프로세스 매핑
+        const vnProcessMapping = {
+            // 업무 요청 접수
+            'Tiếp nhận yêu cầu công việc': '업무 요청 접수',
+            'Work Request Received': '업무 요청 접수',
+            
+            // 테스트 계획
+            'Test Plan': '테스트 계획',
+            'Kế hoạch Test': '테스트 계획',
+            'Test Planning': '테스트 계획',
+            
+            // 테스트 환경 구축 및 유지보수
+            'Tạo môi trường test và bảo trì': '테스트 환경 구축 및 유지보수',
+            'Xây dựng và duy trì môi trường Test': '테스트 환경 구축 및 유지보수',
+            'Test Environment Setup and Maintenance': '테스트 환경 구축 및 유지보수',
+            'Test Environment Setup': '테스트 환경 구축 및 유지보수',
+            
+            // 테스트 설계 및 구현
+            'Design test và cấu hình': '테스트 설계 및 구현',
+            'Thiết kế và triển khai Test': '테스트 설계 및 구현',
+            'Test Design and Implementation': '테스트 설계 및 구현',
+            'Test Design': '테스트 설계 및 구현',
+            
+            // 테스트 실행
+            'Tiến hành test': '테스트 실행',
+            'Thực hiện Test': '테스트 실행',
+            'Test Execution': '테스트 실행',
+            
+            // 테스트 이슈 관리
+            'Quản lý issues test': '테스트 이슈 관리',
+            'Quản lý vấn đề Test': '테스트 이슈 관리',
+            'Test Issue Management': '테스트 이슈 관리',
+            
+            // 테스트 모니터링 및 제어
+            'Kiểm soát và giám sát test': '테스트 모니터링 및 제어',
+            'Giám sát và kiểm soát Test': '테스트 모니터링 및 제어',
+            'Test Monitoring and Control': '테스트 모니터링 및 제어',
+            'Test Monitoring': '테스트 모니터링 및 제어',
+            
+            // 테스트 마감 활동
+            'Hoạt động kết thúc test': '테스트 마감 활동',
+            'Test Closure Activities': '테스트 마감 활동',
+            'Test Closure': '테스트 마감 활동'
+        };
+
         // 전역 변수
         let sets = {};
         let currentSetId = 1;
@@ -893,6 +939,25 @@
 
         // 로컬 스토리지 키
         const STORAGE_KEY = 'standardization_process_chart_data';
+
+        // 베트남어 프로세스 이름 정규화
+        function normalizeProcessName(processText) {
+            if (!processText) return null;
+            
+            // 개행과 예시 텍스트 제거하고 각 라인 확인
+            const lines = processText.split('\n').map(line => line.trim());
+            
+            for (const line of lines) {
+                // 베트남어나 영어 프로세스 이름 찾기
+                for (const [vnName, krName] of Object.entries(vnProcessMapping)) {
+                    if (line.includes(vnName)) {
+                        return krName;
+                    }
+                }
+            }
+            
+            return processText;
+        }
 
         // 커스텀 확인 다이얼로그
         function customConfirm(message, title = '확인') {
@@ -1495,14 +1560,51 @@
                     jsonData.forEach(row => {
                         const normalizedRow = {};
                         Object.keys(row).forEach(key => {
-                            normalizedRow[key.trim()] = row[key];
+                            const trimmedKey = key.trim();
+                            normalizedRow[trimmedKey] = row[key];
+                            
+                            // 베트남어 컬럼명도 한국어로 매핑
+                            if (trimmedKey.includes('Process') || trimmedKey.includes('Quy trình')) {
+                                normalizedRow['프로세스'] = row[key];
+                            }
+                            if (trimmedKey.includes('level') || trimmedKey.includes('Giai đoạn')) {
+                                normalizedRow['적용 단계'] = row[key];
+                            }
+                            if (trimmedKey === 'Activity') {
+                                normalizedRow['액티비티'] = row[key];
+                            }
+                            if (trimmedKey === 'Task') {
+                                normalizedRow['태스크'] = row[key];
+                            }
                         });
                         
                         let process = normalizedRow['프로세스'];
-                        const level = normalizedRow['적용 단계'];
+                        let level = normalizedRow['적용 단계'];
                         
-                        if (process == null || level == null || isNaN(level)) {
+                        if (process == null || level == null) {
                             console.warn('Invalid row:', normalizedRow);
+                            return;
+                        }
+                        
+                        // 베트남어 프로세스 이름을 한국어로 정규화
+                        if (typeof process === 'string') {
+                            process = normalizeProcessName(process);
+                        }
+                        
+                        // 적용 단계에서 숫자만 추출 (예: "2단계_" -> 2, "2Level_" -> 2)
+                        if (typeof level === 'string') {
+                            const match = level.match(/(\d+)/);
+                            if (match) {
+                                level = parseInt(match[1]);
+                            } else {
+                                level = 0;
+                            }
+                        } else {
+                            level = Number(level);
+                        }
+                        
+                        if (isNaN(level)) {
+                            console.warn('Invalid level:', level);
                             return;
                         }
                         
@@ -1519,7 +1621,7 @@
                             processCounts[process] = 0;
                         }
                         
-                        processAvg[process] += Number(level);
+                        processAvg[process] += level;
                         processCounts[process]++;
                     });
 
@@ -1527,8 +1629,34 @@
                         processAvg[process] = processAvg[process] / processCounts[process];
                     }
 
+                    // Raw 데이터를 정규화 (베트남어 컬럼명을 한국어로 변환)
+                    const normalizedRawData = jsonData.map(row => {
+                        const normalized = {};
+                        Object.keys(row).forEach(key => {
+                            const trimmedKey = key.trim();
+                            
+                            if (trimmedKey.includes('Process') || trimmedKey.includes('Quy trình') || trimmedKey === '프로세스') {
+                                const processValue = row[key];
+                                normalized['프로세스'] = typeof processValue === 'string' ? normalizeProcessName(processValue) : processValue;
+                            } else if (trimmedKey.includes('Activity') || trimmedKey === '액티비티') {
+                                normalized['액티비티'] = row[key];
+                            } else if (trimmedKey.includes('Task') || trimmedKey === '태스크') {
+                                normalized['태스크'] = row[key];
+                            } else if (trimmedKey.includes('level') || trimmedKey.includes('Giai đoạn') || trimmedKey === '적용 단계') {
+                                const levelValue = row[key];
+                                if (typeof levelValue === 'string') {
+                                    const match = levelValue.match(/(\d+)/);
+                                    normalized['적용 단계'] = match ? parseInt(match[1]) : 0;
+                                } else {
+                                    normalized['적용 단계'] = Number(levelValue) || 0;
+                                }
+                            }
+                        });
+                        return normalized;
+                    });
+
                     const processedData = {
-                        raw: jsonData,
+                        raw: normalizedRawData,
                         averages: processAvg,
                         counts: processCounts
                     };
@@ -1690,6 +1818,13 @@
             // 프로세스별로 태스크 그룹화
             const tasksByProcess = {};
             
+            // 태스크 번호 추출 함수
+            const getTaskNumber = (taskName) => {
+                if (!taskName) return null;
+                const match = taskName.match(/^(\d+)_/);
+                return match ? match[1] : taskName;
+            };
+            
             if (teamAData && teamAData.raw) {
                 teamAData.raw.forEach(row => {
                     let process = row['프로세스'] || row['프로세스 '];
@@ -1709,14 +1844,23 @@
                         tasksByProcess[process] = [];
                     }
 
-                    const existing = tasksByProcess[process].find(t => t.task === task);
+                    const taskNumber = getTaskNumber(task);
+                    const existing = tasksByProcess[process].find(t => getTaskNumber(t.task) === taskNumber);
                     if (existing) {
-                        existing.nw = Number(level);
+                        existing.nw = Number(level) || 0;
+                        // 한국어 태스크 이름 우선 (더 짧지 않으면 업데이트)
+                        if (task && (!existing.taskKr || task.length < existing.task.length)) {
+                            existing.taskKr = task;
+                            existing.task = task;
+                        }
                     } else {
                         tasksByProcess[process].push({
                             activity: activity,
                             task: task,
-                            nw: Number(level),
+                            taskKr: task,
+                            taskVn: null,
+                            taskNumber: taskNumber,
+                            nw: Number(level) || 0,
                             vn: 0
                         });
                     }
@@ -1742,15 +1886,23 @@
                         tasksByProcess[process] = [];
                     }
 
-                    const existing = tasksByProcess[process].find(t => t.task === task);
+                    const taskNumber = getTaskNumber(task);
+                    const existing = tasksByProcess[process].find(t => getTaskNumber(t.task) === taskNumber);
                     if (existing) {
-                        existing.vn = Number(level);
+                        existing.vn = Number(level) || 0;
+                        // 베트남어 태스크 이름 저장 (참고용)
+                        if (task) {
+                            existing.taskVn = task;
+                        }
                     } else {
                         tasksByProcess[process].push({
                             activity: activity,
                             task: task,
+                            taskKr: null,
+                            taskVn: task,
+                            taskNumber: taskNumber,
                             nw: 0,
-                            vn: Number(level)
+                            vn: Number(level) || 0
                         });
                     }
                 });
@@ -1774,10 +1926,16 @@
                         const nwDisplay = nwValue === 0 ? '' : nwValue;
                         const vnDisplay = vnValue === 0 ? '' : vnValue;
                         
+                        // 태스크 이름: 한국어 / 베트남어 병기
+                        let displayTaskName = taskItem.taskKr || taskItem.task;
+                        if (taskItem.taskVn && taskItem.taskKr && taskItem.taskVn !== taskItem.taskKr) {
+                            displayTaskName += ` / ${taskItem.taskVn}`;
+                        }
+                        
                         html += `
                             <div class="task-item">
                                 <div class="task-header">
-                                    <div class="task-name">${taskItem.task}</div>
+                                    <div class="task-name">${displayTaskName}</div>
                                 </div>
                                 <div class="task-bars">
                                     <div class="task-bar-container">
@@ -1826,6 +1984,13 @@
             // 모든 태스크의 레벨 차이 계산
             const allTasks = [];
             
+            // 태스크 번호 추출 함수
+            const getTaskNumber = (taskName) => {
+                if (!taskName) return null;
+                const match = taskName.match(/^(\d+)_/);
+                return match ? match[1] : taskName;
+            };
+            
             if (teamAData.raw && teamBData.raw) {
                 const taskMap = new Map();
                 
@@ -1840,11 +2005,15 @@
                         if (processEntry) process = parseInt(processEntry[0]);
                     }
 
-                    const key = `${process}-${task}`;
+                    const taskNumber = getTaskNumber(task);
+                    const key = `${process}-${taskNumber}`;
                     taskMap.set(key, {
                         process: process,
                         processName: processNames[process],
                         task: task,
+                        taskKr: task,
+                        taskVn: null,
+                        taskNumber: taskNumber,
                         nw: Number(level) || 0,
                         vn: 0
                     });
@@ -1861,14 +2030,21 @@
                         if (processEntry) process = parseInt(processEntry[0]);
                     }
 
-                    const key = `${process}-${task}`;
+                    const taskNumber = getTaskNumber(task);
+                    const key = `${process}-${taskNumber}`;
                     if (taskMap.has(key)) {
-                        taskMap.get(key).vn = Number(level) || 0;
+                        const existing = taskMap.get(key);
+                        existing.vn = Number(level) || 0;
+                        existing.taskVn = task;
+                        // 한국어 태스크 이름 우선 유지
                     } else {
                         taskMap.set(key, {
                             process: process,
                             processName: processNames[process],
                             task: task,
+                            taskKr: null,
+                            taskVn: task,
+                            taskNumber: taskNumber,
                             nw: 0,
                             vn: Number(level) || 0
                         });
